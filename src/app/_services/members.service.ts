@@ -1,8 +1,10 @@
-import { HttpClient} from '@angular/common/http';
+import { HttpClient, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Member } from '../_models/member';
+import { PaginatedResult } from '../_models/pagination';
+import { UserParams } from '../_models/userParams';
 
 
 
@@ -17,14 +19,15 @@ members:Member[]=[];
     private http:HttpClient
   ) { }
 
-  getMembers(){
-    if(this.members.length>0) return of(this.members);
-    return this.http.get<Member[]>(this.baseUrl+'users').pipe(
-      map(members=>{
-        this.members=members;
-        return members;
-      })
-    )
+  getMembers(userParams:UserParams){
+let params=this.getPaginationHeaders(userParams.pageNumber,userParams.pageSize);
+params=params.append('minAge',userParams.minAge.toString());
+params=params.append('maxAge',userParams.maxAge.toString());
+params=params.append('gender',userParams.gender.toString());
+
+
+    // if(this.members.length>0) return of(this.members);
+    return this.getPaginatedResult<Member[]>(this.baseUrl + 'users');
   }
 
   getMember(username:string){
@@ -48,4 +51,27 @@ members:Member[]=[];
   deletePhoto(photoId:number){
     return this.http.delete(this.baseUrl+'users/delete-photo'+photoId);
   }
+
+  private getPaginatedResult<T>(params) {
+    const paginatedResult:PaginatedResult<T>=new PaginatedResult<T>();
+
+    return this.http.get<T>(this.baseUrl + 'users', { observe: 'response', params }).pipe(
+      map(response => {
+        paginatedResult.result = response.body;
+        if (response.headers.get('Pagination') !== null) {
+          paginatedResult.pagination = JSON.parse(response.headers.get('Pagination'));
+        }
+        return paginatedResult;
+      })
+
+    );
+  }
+
+private getPaginationHeaders(pageNumber:number,pageSize:number){
+  let params=new HttpParams();
+    params=params.append('pageNumber',pageNumber.toString());
+    params=params.append('pageSize',pageSize.toString());
+return params;
+
+}
 }

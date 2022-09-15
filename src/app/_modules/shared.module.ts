@@ -7,6 +7,7 @@ import{NgxGalleryModule} from '@kolkov/ngx-gallery'
 import { NgModule } from '@angular/core';
 import { FileUploadModule } from 'ng2-file-upload';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker'
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 @NgModule({
   declarations: [],
@@ -19,8 +20,8 @@ import {BsDatepickerModule} from 'ngx-bootstrap/datepicker'
 TabsModule.forRoot(),
 NgxGalleryModule,
 FileUploadModule,
-BsDatepickerModule.forRoot()
-
+BsDatepickerModule.forRoot(),
+PaginationModule.forRoot(),
 
   ],
   exports:[
@@ -29,7 +30,8 @@ BsDatepickerModule.forRoot()
     TabsModule,
     NgxGalleryModule,
     FileUploadModule,
-    BsDatepickerModule
+    BsDatepickerModule,
+    PaginationModule
 
 
 
